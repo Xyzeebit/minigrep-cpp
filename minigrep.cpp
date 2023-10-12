@@ -36,7 +36,7 @@ struct Minigrep
         }
     }
 
-    void run()
+    bool run()
     {
         std::ifstream file(path, std::ios_base::in);
         if(file.is_open())
@@ -48,6 +48,11 @@ struct Minigrep
                 search(word, text, line_count);
             }
             file.close();
+            return true;
+        }
+        else 
+        {
+            return false;
         }
     }
 };
@@ -57,20 +62,34 @@ int main(int argc, char* argv[])
     if(argc >= 2)
     {
         Minigrep mg {argv[1], argv[2]};
-        mg.run();
+        const bool ok = mg.run();
 
-        std::cout << std::endl;
-        for(auto& e : mg.lines)
+        if(ok)
         {
-            std::cout << "Text: " << e.text
-                << std::endl
-                << "Word: " << e.word
-                << std::endl
-                << "Line No: " << e.line 
-                << std::endl
-                << "Column No: " << e.position
-                << std::endl;
+            if(mg.lines.size() > 0)
+            {
+                for(auto& e : mg.lines)
+                {
+                    std::cout << "Text: "
+                        << e.text << '\n'
+                        << "Word: " << e.word
+                        << '\n' << "Line No: "
+                        << e.line << '\n'
+                        << "Column No: "
+                        << e.position << '\n';
+                }
+            }
+            else
+            {
+                std::cout << argv[1] << " not found in " << argv[2] << std::endl;
+            }
         }
+        else 
+        {
+            std::cout << "Unable to read from file " << argv[2] << std::endl;
+        }
+        
+        std::cout << std::endl;
     }
     else
     {
