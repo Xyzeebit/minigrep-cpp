@@ -16,7 +16,7 @@ Mini Grep is a command-line tool written in C++ that allows you to search for sp
 
 To use Mini Grep, follow these basic usage instructions:
 
-1. Compile the program: You can compile the source code using a C++ compiler like g++.
+1. Compile the program: You can compile the source code using a C++ compiler like g++ or cmake.
    
    ```bash
    mkdir build && cd build
