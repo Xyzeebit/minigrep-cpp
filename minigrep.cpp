@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 struct Minigrep
 {
@@ -7,15 +8,22 @@ struct Minigrep
     std::string path;
     std::string line;
 
-    Minigrep(std::string filepath, std::string word_to_find) : path{filepath}, word{word_to_find}
+    Minigrep(std::string word_to_find, std::string filepath) : path{filepath}, word{word_to_find}
     {}
 };
 
 int main(int argc, char* argv[])
 {
-    for(int i = 0; i < argc; ++i)
+    if(argc >= 2)
     {
-        std::cout << argv[i];
+        std::cout << "Word: " << argv[1]
+            << " File path: " << argv[2]
+            << std::endl;
     }
-    std::cout << std::endl;
+    else
+    {
+        std::cout << "Not enough arguments pass into program" << std::endl;
+        std::cout << "Usage" << std::endl;
+        std::cout << "./minigrep hello helloword.txt" << std::endl;
+    }
 }
