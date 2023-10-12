@@ -59,12 +59,16 @@ int main(int argc, char* argv[])
         Minigrep mg {argv[1], argv[2]};
         mg.run();
 
+        std::cout << std::endl;
         for(auto& e : mg.lines)
         {
             std::cout << "Text: " << e.text
-                << std::endl << "Line No: "
-                << e.line << std::endl
+                << std::endl
                 << "Word: " << e.word
+                << std::endl
+                << "Line No: " << e.line 
+                << std::endl
+                << "Column No: " << e.position
                 << std::endl;
         }
     }
