@@ -8,6 +8,7 @@ struct Result
     int line;
     int position;
     std::string text;
+    std::string word;
 };
 
 struct Minigrep
@@ -16,12 +17,23 @@ struct Minigrep
     std::string path;
     std::vector<Result> lines;
     std::string text;
+    int line_count = 0;
 
     Minigrep(std::string word_to_find, std::string filepath) : path{filepath}, word{word_to_find}
     {}
 
-    void search(const std::string w, const std::string t)
+    void search(const std::string w, const std::string t, const int c)
     {
+        auto found = t.find(w);
+        if(found != std::string::npos)
+        {
+            Result r;
+            r.text = t;
+            r.word = w;
+            r.position = found;
+            r.line = c;
+            lines.push_back(r);
+        }
     }
 
     void run()
@@ -32,7 +44,8 @@ struct Minigrep
             while(file.good())
             {
                 std::getline(file, text);
-                search(word, text);
+                ++line_count;
+                search(word, text, line_count);
             }
             file.close();
         }
@@ -45,6 +58,15 @@ int main(int argc, char* argv[])
     {
         Minigrep mg {argv[1], argv[2]};
         mg.run();
+
+        for(auto& e : mg.lines)
+        {
+            std::cout << "Text: " << e.text
+                << std::endl << "Line No: "
+                << e.line << std::endl
+                << "Word: " << e.word
+                << std::endl;
+        }
     }
     else
     {
