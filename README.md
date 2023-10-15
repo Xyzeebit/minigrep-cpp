@@ -24,6 +24,9 @@ To use Mini Grep, follow these basic usage instructions:
    ```bash
    cmake ..
    ```
+   ```bash
+   make
+   ```
 
 
 2. Run the program with the desired options:
@@ -42,10 +45,10 @@ To use Mini Grep, follow these basic usage instructions:
 
 ## Examples
 
-- Search for the word "example" in a file:
+- Search for the word "bog" in a file:
    
    ```bash
-   ./mini_grep example sample.txt
+   ./mini_grep bog ../poem.txt
    ```
 
 - Perform a case-insensitive search for "pattern" in multiple files:
