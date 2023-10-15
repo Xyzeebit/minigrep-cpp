@@ -95,6 +95,6 @@ int main(int argc, char* argv[])
     {
         std::cout << "Not enough arguments pass into program" << std::endl;
         std::cout << "Usage:" << std::endl;
-        std::cout << "./minigrep hello helloword.txt" << std::endl;
+        std::cout << "./minigrep hello helloworld.txt" << std::endl;
     }
 }
