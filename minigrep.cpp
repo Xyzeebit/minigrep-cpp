@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include "args.h"
 
 struct Result
 {
@@ -59,6 +60,22 @@ struct Minigrep
 
 int main(int argc, char* argv[])
 {
+    args::ArgParser parser;
+    parser.helptext = "Usage: bog poem.txt";
+    parser.version = "1.0";
+    
+    parser.option("out o", "minigrep.txt");
+    parser.flag("case-insensitive i");
+
+    parser.parse(argc, argv);
+
+    if(parser.found("i"))
+    {
+        std::cout << "Parser working" << '\n';
+    }
+
+    /*
+
     if(argc >= 2)
     {
         Minigrep mg {argv[1], argv[2]};
@@ -97,4 +114,6 @@ int main(int argc, char* argv[])
         std::cout << "Usage:" << std::endl;
         std::cout << "./minigrep hello helloworld.txt" << std::endl;
     }
+
+    */
 }
