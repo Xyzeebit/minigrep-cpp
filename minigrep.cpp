@@ -18,10 +18,10 @@ struct Minigrep
     std::string path;
     std::vector<Result> lines;
     std::string text;
+    bool case_sensitive = false;
     int line_count = 0;
-
-    Minigrep(std::string word_to_find, std::string filepath) : path{filepath}, word{word_to_find}
-    {}
+    std::string pattern;
+    std::string output_file;
 
     void search(const std::string w, const std::string t, const int c)
     {
@@ -60,60 +60,35 @@ struct Minigrep
 
 int main(int argc, char* argv[])
 {
-    args::ArgParser parser;
-    parser.helptext = "Usage: bog poem.txt";
-    parser.version = "1.0";
+    args::ArgParser cli;
+    cli.helptext = "Usage: \
+                       ./minigrep bog poem.txt";
+    cli.version = "1.0";
     
-    parser.option("out o", "minigrep.txt");
-    parser.flag("case-insensitive i");
+    cli.option("out o", "minigrep.txt");
+    cli.option("pattern r", "");
+    cli.flag("case-sensitive i");
 
-    parser.parse(argc, argv);
+    cli.parse(argc, argv);
 
-    if(parser.found("i"))
+    auto size = cli.args.size();
+    Minigrep mg;
+
+    if(cli.found("i"))
     {
-        std::cout << "Parser working" << '\n';
+        mg.case_sensitive = true;
+        //std::cout << "case sensitive\n";
     }
-
-    /*
-
-    if(argc >= 2)
+    if(cli.found("o"))
     {
-        Minigrep mg {argv[1], argv[2]};
-        const bool ok = mg.run();
-
-        if(ok)
-        {
-            if(mg.lines.size() > 0)
-            {
-                for(auto& e : mg.lines)
-                {
-                    std::cout << "Text: "
-                        << e.text << '\n'
-                        << "Word: " << e.word
-                        << '\n' << "Line No: "
-                        << e.line << '\n'
-                        << "Column No: "
-                        << e.position << '\n';
-                }
-            }
-            else
-            {
-                std::cout << argv[1] << " not found in " << argv[2] << std::endl;
-            }
-        }
-        else 
-        {
-            std::cout << "Unable to read from file " << argv[2] << std::endl;
-        }
-        
-        std::cout << std::endl;
+        mg.output_file = cli.value("out");
+        //std::cout << "write to file: "
+            //<< mg.output_file << '\n';
     }
-    else
+    if(cli.found("r"))
     {
-        std::cout << "Not enough arguments pass into program" << std::endl;
-        std::cout << "Usage:" << std::endl;
-        std::cout << "./minigrep hello helloworld.txt" << std::endl;
+        mg.pattern = cli.value("r");
+        //std::cout << "Pattern: " 
+            //<< mg.pattern << '\n';
     }
-
-    */
 }
