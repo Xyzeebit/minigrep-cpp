@@ -2,7 +2,11 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <regex>
 #include "args.h"
+
+using std::regex_constants::ECMAScript;
+using std::regex_constants::icase;
 
 struct Result
 {
@@ -25,15 +29,30 @@ struct Minigrep
 
     void search(const std::string w, const std::string t, const int c)
     {
-        auto found = t.find(w);
-        if(found != std::string::npos)
+        if(!pattern.empty())
         {
-            Result r;
-            r.text = t;
-            r.word = w;
-            r.position = found;
-            r.line = c;
-            lines.push_back(r);
+            std::regex rgx{pattern};
+            std::smatch smatch;
+            
+            if(case_sensitive)
+            {
+                if(std::regex_search(t, smatch, rgx))
+                {
+                    std::cout << "case sensitive: " << smatch[0] << '\n';
+                }
+            }
+            else
+            {
+                std::regex irgx(pattern, ECMAScript | icase);
+                if(std::regex_search(t, smatch, irgx))
+                {
+                    std::cout << "case insensitive" << smatch[0] << '\n';
+                }
+            }
+        }
+        else
+        {
+            std::cout << w << " " << t << '\n';
         }
     }
 
@@ -77,18 +96,31 @@ int main(int argc, char* argv[])
     if(cli.found("i"))
     {
         mg.case_sensitive = true;
-        //std::cout << "case sensitive\n";
     }
     if(cli.found("o"))
     {
         mg.output_file = cli.value("out");
-        //std::cout << "write to file: "
-            //<< mg.output_file << '\n';
     }
     if(cli.found("r"))
     {
         mg.pattern = cli.value("r");
-        //std::cout << "Pattern: " 
-            //<< mg.pattern << '\n';
+    }
+    if(size == 1)
+    {
+        mg.path = cli.args[0];
+    }
+    else if(size == 2)
+    {
+        mg.word = cli.args[0];
+        mg.path = cli.args[1];
+    }
+    else
+    {
+        std::cout << "not enough arguments supplied" << std::endl;
+    }
+    const bool ok = mg.run();
+    if(!ok)
+    {
+        std::cout << "an error occurred\n";
     }
 }
