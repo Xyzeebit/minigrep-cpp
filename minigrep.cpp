@@ -20,7 +20,6 @@ struct Result
     operator const char*()
     {
         std::ostringstream result;
-        result << "Search: " << word << '\n';
         result << "found on line: " << line
             << ", position: " << position
             << '\n' << text << '\n';
