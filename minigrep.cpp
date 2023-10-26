@@ -38,7 +38,15 @@ struct Minigrep
             {
                 if(std::regex_search(t, smatch, rgx))
                 {
-                    std::cout << "case sensitive: " << smatch[0] << '\n';
+                    for(auto i = 0; i < smatch.size(); ++i)
+                    {
+                        Result r;
+                        r.line = c;
+                        r.position = smatch.position(i);
+                        r.word = w;
+                        r.text = t;
+                        lines.push_back(r);
+                    }
                 }
             }
             else
@@ -53,6 +61,7 @@ struct Minigrep
                         r.position = smatch.position(i);
                         r.word = w;
                         r.text = t;
+                        lines.push_back(r);
                     }
                 }
             }
