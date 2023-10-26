@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <regex>
+#include <sstream>
 #include "args.h"
 
 using std::regex_constants::ECMAScript;
@@ -14,6 +15,18 @@ struct Result
     int position;
     std::string text;
     std::string word;
+    std::string output;
+
+    operator const char*()
+    {
+        std::ostringstream result;
+        result << "Search: " << word << '\n';
+        result << "found on line: " << line
+            << ", position: " << position
+            << '\n' << text << '\n';
+        output = result.str();
+        return output.c_str();
+    }
 };
 
 struct Minigrep
@@ -135,7 +148,14 @@ int main(int argc, char* argv[])
         std::cout << "not enough arguments supplied" << std::endl;
     }
     const bool ok = mg.run();
-    if(!ok)
+    if(ok)
+    {
+        for(auto& e : mg.lines)
+        {
+            std::cout << e << std::endl;
+        }
+    }
+    else
     {
         std::cout << "an error occurred\n";
     }
