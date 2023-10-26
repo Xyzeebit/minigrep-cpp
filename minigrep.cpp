@@ -46,7 +46,14 @@ struct Minigrep
                 std::regex irgx(pattern, ECMAScript | icase);
                 if(std::regex_search(t, smatch, irgx))
                 {
-                    std::cout << "case insensitive" << smatch[0] << '\n';
+                    for(auto i = 0; i < smatch.size(); ++i)
+                    {
+                        Result r;
+                        r.line = c;
+                        r.position = smatch.position(i);
+                        r.word = w;
+                        r.text = t;
+                    }
                 }
             }
         }
