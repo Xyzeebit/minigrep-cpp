@@ -2,6 +2,12 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <regex>
+#include <sstream>
+#include "args.h"
+
+using std::regex_constants::ECMAScript;
+using std::regex_constants::icase;
 
 struct Result
 {
@@ -9,6 +15,17 @@ struct Result
     int position;
     std::string text;
     std::string word;
+    std::string output;
+
+    operator const char*()
+    {
+        std::ostringstream result;
+        result << "found on line: " << line
+            << ", position: " << position
+            << '\n' << text << '\n';
+        output = result.str();
+        return output.c_str();
+    }
 };
 
 struct Minigrep
@@ -17,22 +34,53 @@ struct Minigrep
     std::string path;
     std::vector<Result> lines;
     std::string text;
+    bool case_sensitive = false;
     int line_count = 0;
-
-    Minigrep(std::string word_to_find, std::string filepath) : path{filepath}, word{word_to_find}
-    {}
+    std::string pattern;
+    std::string output_file;
 
     void search(const std::string w, const std::string t, const int c)
     {
-        auto found = t.find(w);
-        if(found != std::string::npos)
+        if(!pattern.empty())
         {
-            Result r;
-            r.text = t;
-            r.word = w;
-            r.position = found;
-            r.line = c;
-            lines.push_back(r);
+            std::regex rgx{pattern};
+            std::smatch smatch;
+            
+            if(case_sensitive)
+            {
+                if(std::regex_search(t, smatch, rgx))
+                {
+                    for(auto i = 0; i < smatch.size(); ++i)
+                    {
+                        Result r;
+                        r.line = c;
+                        r.position = smatch.position(i);
+                        r.word = w;
+                        r.text = t;
+                        lines.push_back(r);
+                    }
+                }
+            }
+            else
+            {
+                std::regex irgx(pattern, ECMAScript | icase);
+                if(std::regex_search(t, smatch, irgx))
+                {
+                    for(auto i = 0; i < smatch.size(); ++i)
+                    {
+                        Result r;
+                        r.line = c;
+                        r.position = smatch.position(i);
+                        r.word = w;
+                        r.text = t;
+                        lines.push_back(r);
+                    }
+                }
+            }
+        }
+        else
+        {
+            std::cout << w << " " << t << '\n';
         }
     }
 
@@ -59,42 +107,55 @@ struct Minigrep
 
 int main(int argc, char* argv[])
 {
-    if(argc >= 2)
-    {
-        Minigrep mg {argv[1], argv[2]};
-        const bool ok = mg.run();
+    args::ArgParser cli;
+    cli.helptext = "Usage: \
+                       ./minigrep bog poem.txt";
+    cli.version = "1.0";
+    
+    cli.option("out o", "minigrep.txt");
+    cli.option("pattern r", "");
+    cli.flag("case-sensitive i");
 
-        if(ok)
-        {
-            if(mg.lines.size() > 0)
-            {
-                for(auto& e : mg.lines)
-                {
-                    std::cout << "Text: "
-                        << e.text << '\n'
-                        << "Word: " << e.word
-                        << '\n' << "Line No: "
-                        << e.line << '\n'
-                        << "Column No: "
-                        << e.position << '\n';
-                }
-            }
-            else
-            {
-                std::cout << argv[1] << " not found in " << argv[2] << std::endl;
-            }
-        }
-        else 
-        {
-            std::cout << "Unable to read from file " << argv[2] << std::endl;
-        }
-        
-        std::cout << std::endl;
+    cli.parse(argc, argv);
+
+    auto size = cli.args.size();
+    Minigrep mg;
+
+    if(cli.found("i"))
+    {
+        mg.case_sensitive = true;
+    }
+    if(cli.found("o"))
+    {
+        mg.output_file = cli.value("out");
+    }
+    if(cli.found("r"))
+    {
+        mg.pattern = cli.value("r");
+    }
+    if(size == 1)
+    {
+        mg.path = cli.args[0];
+    }
+    else if(size == 2)
+    {
+        mg.word = cli.args[0];
+        mg.path = cli.args[1];
     }
     else
     {
-        std::cout << "Not enough arguments pass into program" << std::endl;
-        std::cout << "Usage:" << std::endl;
-        std::cout << "./minigrep hello helloworld.txt" << std::endl;
+        std::cout << "not enough arguments supplied" << std::endl;
+    }
+    const bool ok = mg.run();
+    if(ok)
+    {
+        for(auto& e : mg.lines)
+        {
+            std::cout << e << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "an error occurred\n";
     }
 }

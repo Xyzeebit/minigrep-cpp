@@ -6,4 +6,11 @@ project(
     LANGUAGES CXX
 )
 
-add_executable(minigrep minigrep.cpp)
+include_directories(include)
+
+add_executable(
+    minigrep 
+    minigrep.cpp
+    include/args.cpp
+    include/args.h
+)
