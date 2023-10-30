@@ -103,6 +103,16 @@ struct Minigrep
             return false;
         }
     }
+
+    void write_to_file(Result r)
+    {
+        std::ofstream file(output_file, std::ios_base::out|std::ios_base::app);
+        if(file.is_open())
+        {
+            file << r;
+            file.close();
+        }
+    }
 };
 
 int main(int argc, char* argv[])
@@ -151,7 +161,14 @@ int main(int argc, char* argv[])
     {
         for(auto& e : mg.lines)
         {
-            std::cout << e << std::endl;
+            if(cli.found("o"))
+            {
+                mg.write_to_file(e);
+            }
+            else
+            {
+                std::cout << e << std::endl;
+            }
         }
     }
     else
