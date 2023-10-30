@@ -151,6 +151,8 @@ int main(int argc, char* argv[])
     {
         mg.word = cli.args[0];
         mg.path = cli.args[1];
+        //search word should override pattern
+        mg.pattern = cli.args[0];
     }
     else
     {
