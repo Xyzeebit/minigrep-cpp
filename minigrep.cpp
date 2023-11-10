@@ -48,39 +48,35 @@ struct Minigrep
             
             if(case_sensitive)
             {
-                if(std::regex_search(t, smatch, rgx))
-                {
-                    for(auto i = 0; i < smatch.size(); ++i)
-                    {
-                        Result r;
-                        r.line = c;
-                        r.position = smatch.position(i);
-                        r.word = w;
-                        r.text = t;
-                        lines.push_back(r);
-                    }
-                }
+                match(w, t, smatch, rgx, c);
             }
             else
             {
                 std::regex irgx(pattern, ECMAScript | icase);
-                if(std::regex_search(t, smatch, irgx))
-                {
-                    for(auto i = 0; i < smatch.size(); ++i)
-                    {
-                        Result r;
-                        r.line = c;
-                        r.position = smatch.position(i);
-                        r.word = w;
-                        r.text = t;
-                        lines.push_back(r);
-                    }
-                }
+                match(w, t, smatch, irgx, c);
             }
         }
         else
         {
-            std::cout << w << " " << t << '\n';
+            std::regex rgx{word};
+            std::smatch smatch;
+            match(word, t, smatch, rgx, c);
+        }
+    }
+
+    void match(const std::string pattern, const std::string text, std::smatch smatch, std::regex rgx, int counter)
+    {
+        if(std::regex_search(text, smatch, rgx))
+        {
+            for(auto i = 0; i < smatch.size(); ++i)
+            {
+                Result r;
+                r.line = counter;
+                r.position = smatch.position(i);
+                r.word = pattern;
+                r.text = text;
+                lines.push_back(r);
+            }
         }
     }
 
